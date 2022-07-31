@@ -30,7 +30,7 @@ namespace HOF_API.Test
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
 
-                    //retrieve the SQL Server instance version
+                    //Fetch all Persons from database
                     string query = @"SELECT  Id,Name,DisplayName FROM Persons";
                     //define the SqlCommand object
                     SqlCommand cmd = new SqlCommand(query, conn);
@@ -52,14 +52,12 @@ namespace HOF_API.Test
                         }
                     }
                     JToken expected_response = JToken.Parse(JsonConvert.SerializeObject(persons));
-                    Trace.WriteLine("Expect: " + expected_response.ToString());
                     //close data reader
                     dr.Close();
                     //close connection
                     conn.Close();
 
                     //Reading API Persons
-                    Trace.WriteLine(response.ToString());
                     JToken result_response = JToken.Parse((string)response);
                     Person[] received_persons = result_response.ToObject<Person[]>();
                     foreach (Person person in persons)
@@ -72,19 +70,15 @@ namespace HOF_API.Test
                         Assert.True(existed,
                             "Person " + person.Id + " wasn't received!");
                     }
-                        
-                    Trace.WriteLine("Result: " + result_response.ToString());
-                    //Assert.True(expected_response.Equals(result_response));
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
+                Trace.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
                 //display error message
-                Console.WriteLine("Exception: " + ex.Message);
-                Assert.True(false);
+                Trace.WriteLine("Exception: " + ex.Message);
+                Assert.True(false, "Exception: " + ex.Message);
             }
-
         }
 
         [Fact]
@@ -117,7 +111,6 @@ namespace HOF_API.Test
                             perId = dr.GetInt32(0);
                             perName = dr.GetString(1);
                             perDisplayName = dr.GetString(2);
-
                         }
                     }
                     response = await client.GetStringAsync(String.Concat("/v1/person/", perId));
@@ -127,15 +120,11 @@ namespace HOF_API.Test
                     conn.Close();
 
                     //Reading API Persons
-                    Trace.WriteLine(response.ToString());
-
                     Person resultData = JsonConvert.DeserializeObject<Person>(response);
-
                     string respons_name = resultData.Name;
                     string respons_disname = resultData.DisplayName;
                     Assert.Equal(perName, respons_name);
                     Assert.Equal(perDisplayName, respons_disname);
-
                     //Check sending id = null to API
                     var responseNull = await client.GetAsync(string.Concat("/v1/person/", 0));
                     Assert.Equal(HttpStatusCode.BadRequest,
@@ -144,11 +133,11 @@ namespace HOF_API.Test
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
+                Trace.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
                 //display error message
-                Console.WriteLine("Exception: " + ex.Message);
+                Trace.WriteLine("Exception: " + ex.Message);
+                Assert.True(false, "Exception: " + ex.Message);
             }
-
         }
 
         [Fact]
@@ -183,7 +172,6 @@ namespace HOF_API.Test
                                               }
                      },
                 };
-
                 var jsonRequest = JsonConvert.SerializeObject(personData);
                 var buffer = System.Text.Encoding.UTF8.GetBytes(jsonRequest);
                 var byteContent = new ByteArrayContent(buffer);
@@ -193,7 +181,6 @@ namespace HOF_API.Test
 
                 //Reading API Response
                 PersonData resultData = JsonConvert.DeserializeObject<PersonData>(content);
-
                 string respons_name = resultData.Person.Name;
                 string respons_disname = resultData.Person.DisplayName;
 
@@ -207,17 +194,15 @@ namespace HOF_API.Test
                             Assert.Equal((byte)7 , perSkill.SkillLevel);
                     }
                 }
-                
                 Assert.Equal(perName, respons_name);
                 Assert.Equal(perDisplayName, respons_disname);
-                
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
+                Trace.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
                 //display error message
-                Console.WriteLine("Exception: " + ex.Message);
-                Assert.True(false);
+                Trace.WriteLine("Exception: " + ex.Message);
+                Assert.True(false, "Exception: " + ex.Message);
             }
         }
 
@@ -248,7 +233,6 @@ namespace HOF_API.Test
                             perId = dr.GetInt32(0);
                             perName = dr.GetString(1);
                             perDisplayName = dr.GetString(2);
-
                         }
                     }
                     //close data reader
@@ -309,12 +293,11 @@ namespace HOF_API.Test
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
+                Trace.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
                 //display error message
-                Console.WriteLine("Exception: " + ex.Message);
-                Assert.True(false);
+                Trace.WriteLine("Exception: " + ex.Message);
+                Assert.True(false, "Exception: " + ex.Message);
             }
-
         }
 
         [Fact]
@@ -347,7 +330,6 @@ namespace HOF_API.Test
                     dr.Close();
                     //close connection
                     conn.Close();
-
                     //Send Delete to API
                     var response = await client.DeleteAsync("/v1/person/" + perId);
                     var content = await response.Content.ReadAsStringAsync();
@@ -401,14 +383,12 @@ namespace HOF_API.Test
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
+                Trace.WriteLine("Some error happened while testing Persons API controller. Please re-run the test.");
                 //display error message
-                Console.WriteLine("Exception: " + ex.Message);
-                Assert.True(false);
+                Trace.WriteLine("Exception: " + ex.Message);
+                Assert.True(false, "Exception: " + ex.Message);
             }
         }
-
-
         private static Random _random = new Random();
         public static string RandomString(int length)
         {
